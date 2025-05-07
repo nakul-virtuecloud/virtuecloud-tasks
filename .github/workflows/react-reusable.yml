@@ -1,0 +1,42 @@
+#react-reusable.yml is the called or reusable workflow — 
+#it contains the actual steps to build and deploy the React app.```
+
+name: Reusable React Build & Deploy
+
+on:
+  workflow_call:
+    inputs:
+      working_dir:
+        required: true
+        type: string
+      bucket_name:
+        required: true
+        type: string
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: ${{ inputs.working_dir }}
+
+      - name: Build React app
+        run: npm run build
+        working-directory: ${{ inputs.working_dir }}
+
+      - name: Deploy to S3
+        if: success()
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --acl public-read --delete
+        env:
+          AWS_S3_BUCKET: ${{ inputs.bucket_name }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ap-south-1
+          SOURCE_DIR: ${{ inputs.working_dir }}/build
