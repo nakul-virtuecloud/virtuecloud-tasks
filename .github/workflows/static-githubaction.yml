@@ -1,34 +1,52 @@
-name: React app CI/CD
-description: A simple React app with CI/CD pipeline
+# name: React app CI/CD
+# description: A simple React app with CI/CD pipeline
+
+# on:
+#     push:
+#         branches: [main]
+# jobs:
+#     build:
+#         runs-on: ubuntu-latest
+        
+#         steps:
+#             - name: Checkout code
+#               uses: actions/checkout@v2
+            
+#             - name: Install dependances
+#               run: npm install
+#               working-directory: s3-hosting-demo
+            
+#             - name: build app
+#               run: npm run build
+#               working-directory: s3-hosting-demo
+
+#             # Optional: Upload to S3
+#             - name: Deploy to S3
+#               if: success()
+#               uses: jakejarvis/s3-sync-action@master
+#               with:
+#                 args: --acl public-read --delete
+#               env:
+#                 AWS_S3_BUCKET: static-web-1165
+#                 AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#                 AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#                 AWS_REGION: ap-south-1
+#                 SOURCE_DIR: s3-hosting-demo/build
+
+#==========================END===================
+
+#caller file
+# static-githubaction.yml is the caller workflow — it just triggers the reusable logic.
+name: React App CI/CD (Using Reusable Workflow)
 
 on:
-    push:
-        branches: [main]
-jobs:
-    build:
-        runs-on: ubuntu-latest
-        
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v2
-            
-            - name: Install dependances
-              run: npm install
-              working-directory: s3-hosting-demo
-            
-            - name: build app
-              run: npm run build
-              working-directory: s3-hosting-demo
+  push:
+    branches: [main]
 
-            # Optional: Upload to S3
-            - name: Deploy to S3
-              if: success()
-              uses: jakejarvis/s3-sync-action@master
-              with:
-                args: --acl public-read --delete
-              env:
-                AWS_S3_BUCKET: static-web-1165
-                AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                AWS_REGION: ap-south-1
-                SOURCE_DIR: s3-hosting-demo/build
+jobs:
+  deploy-react:
+    uses: ./.github/workflows/react-reusable.yml
+    with:
+      working_dir: s3-hosting-demo
+      bucket_name: static-web-1165
+    secrets: inherit
