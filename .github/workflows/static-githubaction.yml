@@ -35,13 +35,15 @@
 
 #==========================END===================
 
+#==================reusable cicd================
 #caller file
 # static-githubaction.yml is the caller workflow — it just triggers the reusable logic.
 name: React App CI/CD (Using Reusable Workflow)
 
 on:
-  push:
-    branches: [main]
+    workflow_dispatch:
+#   push:
+#     branches: [main]
 
 jobs:
   deploy-react:
