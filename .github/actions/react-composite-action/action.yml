@@ -1,0 +1,40 @@
+name: React Build and Deploy to S3 (Composite)
+description: Install dependencies, build React app, and deploy to S3
+
+inputs:
+  working_dir:
+    description: 'Directory where the React app lives'
+    required: true
+  bucket_name:
+    description: 'Name of the target S3 bucket'
+    required: true
+  aws_access_key_id:
+    description: 'AWS Access Key'
+    required: true
+  aws_secret_access_key:
+    description: 'AWS Secret Key'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install dependencies
+      run: npm install
+      working-directory: ${{ inputs.working_dir }}
+      shell: bash
+
+    - name: Build React app
+      run: npm run build
+      working-directory: ${{ inputs.working_dir }}
+      shell: bash
+
+    - name: Deploy to S3
+      uses: jakejarvis/s3-sync-action@master
+      with:
+        args: --acl public-read --delete
+      env:
+        AWS_S3_BUCKET: ${{ inputs.bucket_name }}
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key_id }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_access_key }}
+        AWS_REGION: ap-south-1
+        SOURCE_DIR: ${{ inputs.working_dir }}/build
