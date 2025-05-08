@@ -1,0 +1,20 @@
+name: React App CI/CD (Using Composite Action)
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy-react:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Use Composite Action
+        uses: ./.github/actions/react-composite-action
+        with:
+          working_dir: s3-hosting-demo
+          bucket_name: static-web-1165
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
