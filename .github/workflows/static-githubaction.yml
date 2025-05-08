@@ -42,6 +42,7 @@ name: React App CI/CD (Using Reusable Workflow)
 
 on:
     workflow_dispatch:
+# when you want to run this reusable CICD automatically remove workflow_dispatch and undo push
 #   push:
 #     branches: [main]
 
